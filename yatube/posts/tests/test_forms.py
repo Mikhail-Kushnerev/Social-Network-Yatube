@@ -98,7 +98,10 @@ class CreateFormTests(TestCase):
         post_id_0 = element.id
         if post_id_0 == self.post.id:
             post_image_0 = site_obj.image
-            self.assertEqual(post_image_0, f"posts/{form_create_data['image']}")
+            self.assertEqual(
+                post_image_0,
+                f"posts/{form_create_data['image']}"
+        )
 
     def test_edit_post_login(self):
         form_edit_data = {
@@ -156,7 +159,13 @@ class CreateFormTests(TestCase):
             'text': 'Комментарий',
         }
         self.client.post(
-            reverse('posts:post_detail', kwargs={'post_id': self.post.id}), form_data_comment, follow=True)
+            reverse(
+                'posts:post_detail',
+                kwargs={'post_id': self.post.id}
+            ),
+            form_data_comment,
+            follow=True
+        )
         self.assertEqual(Comment.objects.count(), tasks_count)
 
     def test_edit_post_anon(self):
