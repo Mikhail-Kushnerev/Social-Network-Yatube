@@ -101,7 +101,7 @@ class CreateFormTests(TestCase):
             self.assertEqual(
                 post_image_0,
                 f"posts/{form_create_data['image']}"
-        )
+            )
 
     def test_edit_post_login(self):
         form_edit_data = {
