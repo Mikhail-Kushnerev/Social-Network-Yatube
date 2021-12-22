@@ -40,18 +40,6 @@ class CreateFormTests(TestCase):
     def test_add_create_image_post_login(self):
         """Валидная форма создает запись в Post."""
 
-        tasks_count = Post.objects.count()
-
-        urls = [
-            reverse('posts:index'),
-            reverse('posts:group_list', kwargs={
-                'slug': self.group.slug}),
-            reverse('posts:profile', kwargs={
-                'username': self.user.username}),
-            reverse('posts:post_detail', kwargs={
-                'post_id': self.post.id})
-        ]
-
         small_gif = (
             b'\x47\x49\x46\x38\x39\x61\x02\x00'
             b'\x01\x00\x80\x00\x00\x00\x00\x00'
@@ -86,22 +74,10 @@ class CreateFormTests(TestCase):
             element.group.id,
             form_create_data['group']
         )
-        self.assertEqual(Post.objects.count(), tasks_count + 1)
-        self.assertEqual(element.image, f"posts/{form_create_data['image']}")
-
-        for url in urls:
-            response = self.client.get(url)
-            if url == urls[-1]:
-                site_obj = response.context['text_post']
-            else:
-                site_obj = response.context['page_obj'][0]
-        post_id_0 = element.id
-        if post_id_0 == self.post.id:
-            post_image_0 = site_obj.image
-            self.assertEqual(
-                post_image_0,
-                f"posts/{form_create_data['image']}"
-            )
+        self.assertEqual(
+            element.image,
+            f"posts/{form_create_data['image']}"
+        )
 
     def test_edit_post_login(self):
         form_edit_data = {
@@ -124,37 +100,40 @@ class CreateFormTests(TestCase):
         self.assertEqual(edit_text, form_edit_data['text'])
 
     def test_comment_post_login(self):
+
         form_comment_data = {
             'text': 'Коммент от логина',
         }
         self.author_client.post(
             reverse(
-                'posts:post_detail',
-                kwargs={'post_id': self.post.id}),
-            form_comment_data
+                'posts:add_comment',
+                kwargs={'post_id': self.post.id}
+            ),
+            form_comment_data,
+            follow=True
         )
-        response = self.client.get(
+        comment_post = Comment.objects.order_by('-created')[0]
+        self.client.get(
             reverse(
                 'posts:post_detail',
                 kwargs={'post_id': self.post.id}
             )
         )
-        site_obj = response.context['text_post']
-        post_comment_0 = site_obj.comments
-        self.assertEqual(post_comment_0, self.post.comments)
+        self.assertEqual(comment_post.text, form_comment_data['text'])
+        self.assertEqual(comment_post.id, self.post.id)
 
     def test_create_post_anon(self):
-        tasks_count = Post.objects.count()
+        post_count = Post.objects.count()
         form_data = {
             'group': self.group.id,
             'text': 'Тестовый текст',
         }
         self.client.post(
             reverse('posts:create'), form_data, follow=True)
-        self.assertEqual(Post.objects.count(), tasks_count)
+        self.assertEqual(Post.objects.count(), post_count)
 
     def test_create_comment_anon(self):
-        tasks_count = Comment.objects.count()
+        comment_count = Comment.objects.count()
         form_data_comment = {
             'text': 'Комментарий',
         }
@@ -166,7 +145,7 @@ class CreateFormTests(TestCase):
             form_data_comment,
             follow=True
         )
-        self.assertEqual(Comment.objects.count(), tasks_count)
+        self.assertEqual(Comment.objects.count(), comment_count)
 
     def test_edit_post_anon(self):
         form_edit_data = {

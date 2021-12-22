@@ -25,8 +25,14 @@ class PostPagesViewsTests(TestCase):
                 text='текст',
                 group=cls.group,
             )
+        cls.follower = Follow.objects.create(
+            user=cls.user,
+            author=cls.post.author
+        )
+        cls.follower_order_id = Follow.objects.order_by('-user_id')[0]
 
     def test_cache(self):
+        cache.clear()
         response = self.author_client.get(reverse('posts:index'))
         page_obj = response.content
         post_db = Post.objects.all()
@@ -57,28 +63,32 @@ class PostPagesViewsTests(TestCase):
         post_id_0 = site_obj.id
         if post_id_0 == self.post.id:
             post_text_0 = site_obj.text
+            post_image_0 = site_obj.image
             post_group_0 = site_obj.group.title
             post_author_0 = site_obj.author.username
             self.assertEqual(post_id_0, self.post.id)
             self.assertEqual(post_text_0, self.post.text)
+            self.assertEqual(post_image_0, self.post.image)
             self.assertEqual(post_group_0, self.group.title)
             self.assertEqual(post_author_0, self.user.username)
 
     def test_create_and_edit_page_show_correct_context_(self):
         """Шаблон home сформирован с правильным контекстом."""
-        response = self.author_client.get(
-            reverse('posts:create')
-        ) and self.author_client.get(
+        urls = [
+            reverse('posts:create'),
             reverse('posts:post_edit', kwargs={'post_id': self.post.id})
-        )
+        ]
+
         form_fields = {
             'text': forms.fields.CharField,
             'group': forms.fields.ChoiceField,
         }
-        for value, expected in form_fields.items():
-            with self.subTest(value=value):
-                form_field = response.context.get('form').fields[value]
-                self.assertIsInstance(form_field, expected)
+        for url in urls:
+            response = self.author_client.get(url)
+            for value, expected in form_fields.items():
+                with self.subTest(value=value):
+                    form_field = response.context.get('form').fields[value]
+                    self.assertIsInstance(form_field, expected)
 
     def test_first_page_contains_ten_records(self):
         templates = [
@@ -104,24 +114,22 @@ class PostPagesViewsTests(TestCase):
         self.not_foll = Client()
         self.not_foll.force_login(self.user_2)
 
-        follows_before = Follow.objects.count()
-
-        Follow.objects.create(user=self.user, author=self.post.author)
-        post = Post.objects.create(author=self.post.author, text='t1')
         response_not = self.not_foll.get(
             reverse('posts:follow_index')
         )
-        self.assertNotIn(post, response_not.context['page_obj'])
+        self.assertNotIn(self.post, response_not.context['page_obj'])
         response = self.author_client.get(
             reverse('posts:follow_index')
         )
-        self.assertIn(post, response.context['page_obj'])
-        self.assertEqual(Follow.objects.count(), follows_before + 1)
+        self.assertIn(self.post, response.context['page_obj'])
 
     def test_following(self):
 
-        Follow.objects.create(user=self.user, author=self.post.author)
-        response_anon = self.client.get(
-            reverse('posts:follow_index')
-        )
-        self.assertEqual(response_anon.status_code, 302)
+        foll_man = self.follower_order_id
+        self.assertEqual(foll_man.id, self.follower.id)
+
+    def test_following_delete(self):
+
+        self.follower_order_id.delete()
+        Follow.objects.count()
+        self.assertEqual(Follow.objects.count(), 0)
