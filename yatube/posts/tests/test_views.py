@@ -25,22 +25,34 @@ class PostPagesViewsTests(TestCase):
                 text='текст',
                 group=cls.group,
             )
-        cls.follower = Follow.objects.create(
-            user=cls.user,
+
+        cls.user_2 = User.objects.create_user(username='not_follower')
+        cls.not_foll = Client()
+        cls.not_foll.force_login(cls.user_2)
+
+        cls.follower = User.objects.create_user(
+            username='follower'
+        )
+        cls.follower_client = Client()
+        cls.follower_client.force_login(cls.follower)
+
+        cls.fol_date = Follow.objects.create(
+            user=cls.follower,
             author=cls.post.author
         )
-        cls.follower_order_id = Follow.objects.order_by('-user_id')[0]
 
     def test_cache(self):
         cache.clear()
-        response = self.author_client.get(reverse('posts:index'))
+        response = self.client.get(reverse('posts:index'))
         page_obj = response.content
         post_db = Post.objects.all()
         post_db.delete()
-        page_obj_two = self.author_client.get(reverse('posts:index'))
-        page_obj_two = response.content
+        response_2 = self.client.get(reverse('posts:index'))
+        page_obj_two = response_2.content
         self.assertEqual(page_obj, page_obj_two)
         cache.clear()
+        response_2 = self.client.get(reverse('posts:index')).content
+        self.assertNotEqual(page_obj, response_2)
 
     def test_post_page_show_correct_context(self):
 
@@ -97,6 +109,7 @@ class PostPagesViewsTests(TestCase):
             reverse('posts:profile', kwargs={'username': self.user.username})
         ]
         for template in templates:
+            cache.clear()
             response = self.client.get(template)
             self.assertEqual(
                 len(response.context['page_obj']), settings.PAGE_SITE
@@ -110,26 +123,36 @@ class PostPagesViewsTests(TestCase):
 
     def test_new_post_for_followers(self):
 
-        self.user_2 = User.objects.create_user(username='not_follower')
-        self.not_foll = Client()
-        self.not_foll.force_login(self.user_2)
-
         response_not = self.not_foll.get(
             reverse('posts:follow_index')
         )
         self.assertNotIn(self.post, response_not.context['page_obj'])
-        response = self.author_client.get(
+
+        response = self.follower_client.get(
             reverse('posts:follow_index')
         )
         self.assertIn(self.post, response.context['page_obj'])
 
     def test_following(self):
 
-        foll_man = self.follower_order_id
-        self.assertEqual(foll_man.id, self.follower.id)
+        response_not_fol_to_foll = self.not_foll.get(
+            reverse(
+                'posts:profile_follow',
+                kwargs={'username': self.user.username}
+            ),
+            follow=True
+        )
+        self.assertEqual(Follow.objects.count(), 2)
+        self.assertEqual(response_not_fol_to_foll.status_code, 200)
 
     def test_following_delete(self):
 
-        self.follower_order_id.delete()
-        Follow.objects.count()
-        self.assertEqual(Follow.objects.count(), 0)
+        resp_foll_to_not_fol = self.follower_client.get(
+            reverse(
+                'posts:profile_unfollow',
+                kwargs={'username': self.user.username}
+            ),
+            follow=True
+        )
+        self.assertTrue(Follow.objects.count, 1)
+        self.assertEqual(resp_foll_to_not_fol.status_code, 200)
