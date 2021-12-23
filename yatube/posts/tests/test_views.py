@@ -30,9 +30,7 @@ class PostPagesViewsTests(TestCase):
         cls.not_foll = Client()
         cls.not_foll.force_login(cls.user_2)
 
-        cls.follower = User.objects.create_user(
-            username='follower'
-        )
+        cls.follower = User.objects.create_user(username='follower')
         cls.follower_client = Client()
         cls.follower_client.force_login(cls.follower)
 
