@@ -38,6 +38,7 @@ class PostPagesViewsTests(TestCase):
             user=cls.follower,
             author=cls.post.author
         )
+        cls.follower_count = Follow.objects.count()
 
     def test_cache(self):
         cache.clear()
@@ -133,24 +134,35 @@ class PostPagesViewsTests(TestCase):
 
     def test_following(self):
 
-        response_not_fol_to_foll = self.not_foll.get(
+        self.assertTrue(self.follower_count, len(Follow.objects.all()))
+        self.not_foll.get(
             reverse(
                 'posts:profile_follow',
                 kwargs={'username': self.user.username}
             ),
             follow=True
         )
-        self.assertEqual(Follow.objects.count(), 2)
-        self.assertEqual(response_not_fol_to_foll.status_code, 200)
+        self.assertEqual(len(Follow.objects.all()), self.follower_count + 1)
+        self.assertTrue(
+            Follow.objects.filter(
+                user=self.user_2,
+                author=self.post.author
+            ).exists()
+        )
 
     def test_following_delete(self):
 
-        resp_foll_to_not_fol = self.follower_client.get(
+        self.assertTrue(self.follower_count, len(Follow.objects.all()))
+        self.follower_client.get(
             reverse(
                 'posts:profile_unfollow',
                 kwargs={'username': self.user.username}
             ),
             follow=True
         )
-        self.assertTrue(Follow.objects.count, 1)
-        self.assertEqual(resp_foll_to_not_fol.status_code, 200)
+        self.assertEqual(len(Follow.objects.all()), self.follower_count - 1)
+        self.assertFalse(
+            Follow.objects.filter(
+                user=self.user_2,
+                author=self.post.author
+            ).exists())
