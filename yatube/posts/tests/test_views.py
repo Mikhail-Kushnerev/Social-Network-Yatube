@@ -70,7 +70,7 @@ class PostPagesViewsTests(TestCase):
             if url == urls[-1]:
                 site_obj = response.context['text_post']
             else:
-                site_obj = response.content[0]
+                site_obj = response.context['page_obj'][0]
         post_id_0 = site_obj.id
         if post_id_0 == self.post.id:
             post_text_0 = site_obj.text

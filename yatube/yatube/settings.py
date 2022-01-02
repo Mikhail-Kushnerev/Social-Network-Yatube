@@ -2,10 +2,6 @@ import os
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
-MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.2/howto/deployment/checklist/
@@ -25,7 +21,6 @@ ALLOWED_HOSTS = [
     'testserver',
 ]
 
-
 # Application definition
 
 INSTALLED_APPS = [
@@ -40,6 +35,7 @@ INSTALLED_APPS = [
     'core.apps.CoreConfig',
     'about.apps.AboutConfig',
     'sorl.thumbnail',
+    'debug_toolbar',
 ]
 
 MIDDLEWARE = [
@@ -47,6 +43,7 @@ MIDDLEWARE = [
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -138,3 +135,9 @@ EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
 EMAIL_FILE_PATH = os.path.join(BASE_DIR, 'sent_emails')
 
 STATIC_URL = '/static/'
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+INTERNAL_IPS = [
+    '127.0.0.1',
+]

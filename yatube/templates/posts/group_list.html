@@ -4,22 +4,10 @@
   {{ group.title }}
 {% endblock %}  
 {% block content %}
-{% load user_filters %}
   <div class="container">
     <p> {{ description }} </p>
     {% for post in page_obj %}
-      <article>
-        <ul>
-          <li>
-            Автор: {{ post.author.get_full_name }}
-          </li>
-          <li>
-            Дата публикации: {{ post.pub_date|date:"d E Y" }}
-          </li>
-        </ul>
-        <p> {{ post.text|linebreaksbr }} </p>
-        {% if not forloop.last %} <hr> {% endif %}
-      </article>
+      {% include 'posts/includes/post.html' %}
     {% endfor %}
     {% include 'includes/paginator.html' %}
   </div>
