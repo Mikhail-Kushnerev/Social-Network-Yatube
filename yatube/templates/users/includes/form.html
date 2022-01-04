@@ -20,7 +20,7 @@
         {% endif %}
         <form
           method="post"
-          action="{% url 'users:signup' %}"
+          
         >
           {% csrf_token %}
           {% for field in form %}
@@ -49,6 +49,9 @@
             >
               {{ button }}
             </button>
+            <a href="{% url 'users:password_reset' %}" class="btn btn-link">
+              {{ button_2 }}
+            </a>
           </div>
         </form>
       </div>

@@ -149,7 +149,7 @@ def post_edit(request, post_id):
         pk=post_id
     )
     if post.author != request.user:
-        return redirect('posts:index')
+        return redirect('posts:post_detail', post_id)
     title = "Редактировать запись"
     text = "Редактирование поста"
     apply = "Сохранить изменения"
