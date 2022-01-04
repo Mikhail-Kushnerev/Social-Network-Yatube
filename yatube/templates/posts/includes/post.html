@@ -8,15 +8,17 @@
         </li>
     </ul>
     <p>
-        {{ post.text|linebreaksbr }} </p>
+        {{ post.text|linebreaksbr }}
     </p>
     {% include 'posts/includes/picture.html' %}
     <a href="{% url 'posts:post_detail' post.id %}"> подробная информация </a>
-    {% if post.group %}
-    <a href="{% url 'posts:group_list' post.group.slug %}"> все записи группы </a>
-    {% else %}
-    У этого поста нет группы
-    {% endif %}
+    <p>
+        {% if post.group %}
+        <a href="{% url 'posts:group_list' post.group.slug %}"> все записи группы </a>
+        {% else %}
+        У этого поста нет группы
+        {% endif %}
+    </p>
     {% if not forloop.last %}
     <hr> {% endif %}
 </article>

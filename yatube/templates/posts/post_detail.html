@@ -36,20 +36,41 @@
         </p>
       </article>
       {% if text_post.author.id == user.id %}
-      <a href="{% url 'posts:post_edit' text_post.id %}" class="btn btn-primary">
+      <a
+        href="{% url 'posts:post_edit' text_post.id %}"
+        class="btn btn-primary"
+      >
         Редактировать
       </a>
       {% endif %}
       {% if user.is_authenticated %}
       <div class="card my-4">
-        <h5 class="card-header">Добавить комментарий:</h5>
+        <h5 class="card-header"> Добавить комментарий: </h5>
         <div class="card-body">
-          <form method="post" action="{% url 'posts:add_comment' text_post.id %}">
+          <form 
+            method="post"
+            action="{% url 'posts:add_comment' text_post.id %}"
+          >
             {% csrf_token %}
-            <div class="form-group mb-2">
-              {{ form.text|addclass:"form-control" }}
-            </div>
-            <button type="submit" class="btn btn-primary">Отправить</button>
+            {% for field in form%}
+              <div class="form-group mb-2">
+                {{ form.text|addclass:"form-control" }}
+                {% if field.help_text %}
+                <small
+                  id="{{ field.id_for_label }}-help"
+                  class="form-text text-muted"
+                >
+                  {{ field.help_text|safe }}
+                </small>
+                {% endif %}
+              </div>
+            {% endfor %}
+            <button
+              type="submit"
+              class="btn btn-primary"
+            >
+              Отправить
+            </button>
           </form>
         </div>
       </div>
