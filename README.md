@@ -16,13 +16,20 @@ Cоциальная сеть для публикации личных дневн
 ```
 git clone https://github.com/Mikhail-Kushnerev/hw05_final
 ```
-- Установите виртуальное окружение, активируйте его и проинсталлируйте необходимые зависимости:
+- Установите виртуальное окружение, активируйте его:
 ```
 python -m venv venv
 
 (Windows)
 source venv/Scripts/activate
-
+```
+- Проинсталлируйте необходимые зависимости и выполните миграции:
+```
 pip install -r requirements.txt
+cd yatube -> python manage.py migrate
+```
+- Запустите проект:
+```
+python manage.py runserver
 ```
 [![CI](https://github.com/yandex-praktikum/hw05_final/actions/workflows/python-app.yml/badge.svg?branch=master)](https://github.com/yandex-praktikum/hw05_final/actions/workflows/python-app.yml)
