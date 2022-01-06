@@ -1,5 +1,7 @@
 from django.db import models
 from django.contrib.auth import get_user_model
+from django.db.models.expressions import F
+from django.db.models.query_utils import Q
 
 from core.models import CreatedModel
 
@@ -103,6 +105,9 @@ class Follow(models.Model):
         constraints = [
             models.UniqueConstraint(
                 fields=['user', 'author'], name='unique_follow'),
+            models.CheckConstraint(
+                check=~Q(user=F('author')), name='dont_follow_yourself'
+            )
         ]
         ordering = ["-user"]
         verbose_name = "подписка"
