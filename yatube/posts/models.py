@@ -37,6 +37,8 @@ class Post(models.Model):
     )
 
     class Meta:
+        verbose_name = 'Пост'
+        verbose_name_plural = 'Посты'
         ordering = ('-pub_date', )
 
     def __str__(self):
@@ -77,6 +79,10 @@ class Group(models.Model):
         verbose_name='Описание'
     )
 
+    class Meta:
+        verbose_name = 'Группа'
+        verbose_name_plural = 'Группы'
+
     def __str__(self):
         return self.title
 
@@ -92,3 +98,12 @@ class Follow(models.Model):
         on_delete=models.CASCADE,
         related_name="following"
     )
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=['user', 'author'], name='unique_follow'),
+        ]
+        ordering = ["-user"]
+        verbose_name = "подписка"
+        verbose_name_plural = "подписки"
