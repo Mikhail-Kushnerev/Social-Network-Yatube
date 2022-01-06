@@ -41,14 +41,14 @@ class Post(models.Model):
     class Meta:
         verbose_name = 'Пост'
         verbose_name_plural = 'Посты'
-        ordering = ('-pub_date', )
+        ordering = ('-pub_date',)
 
     def __str__(self):
         return self.text[:15]
     
-    def trim10(self):
-        return "%s..." % (self.text[:10],)
-
+    def trim50(self):
+        return "%s..." % (self.text[:50],)
+    trim50.short_description="Текст"
 
 class Comment(CreatedModel):
     post = models.ForeignKey(
@@ -115,3 +115,6 @@ class Follow(models.Model):
         ordering = ["-user"]
         verbose_name = "подписка"
         verbose_name_plural = "подписки"
+
+        def __str__(self):
+            return f'{self.user.username} подписался на {self.author.username}'

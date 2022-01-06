@@ -7,7 +7,7 @@ from .models import Comment, Post, Group, Comment, Follow
 class PostAdmin(admin.ModelAdmin):
     list_display = (
         'pk',
-        'trim10',
+        'trim50',
         'pub_date',
         'author',
         'group',
@@ -17,6 +17,7 @@ class PostAdmin(admin.ModelAdmin):
     list_filter = ('author', 'pub_date')
     list_editable = ('group',)
     empty_value_display = '-пусто-'
+    list_per_page = 10
 
 
 @admin.register(Comment)
