@@ -7,7 +7,7 @@
             Дата публикации: {{ post.pub_date|date:"d E Y" }}
         </li>
     </ul>
-    <p>
+    <p style="overflow-wrap: break-word;">
         {{ post.text|linebreaksbr }}
     </p>
     {% include 'posts/includes/picture.html' %}

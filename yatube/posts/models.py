@@ -45,6 +45,9 @@ class Post(models.Model):
 
     def __str__(self):
         return self.text[:15]
+    
+    def trim10(self):
+        return "%s..." % (self.text[:10],)
 
 
 class Comment(CreatedModel):
