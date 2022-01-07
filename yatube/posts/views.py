@@ -28,7 +28,7 @@ def group_posts(request, slug):
         Group,
         slug=slug
     )
-    title = f'Записи сообщества {group.title}'
+    title = f'Записи сообщества {group}'
     description = group.description
     posts = group.group_post.all()
     context = {
