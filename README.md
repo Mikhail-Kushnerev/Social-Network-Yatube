@@ -24,7 +24,7 @@ Cоциальная сеть для публикации личных дневн
 - Python 3.10
 - SQLite3
 
-[к оглавлению](#оглавление)
+[⬆️Оглавление](#оглавление)
 
 ## Установка
 - Склонируйте проект:
@@ -47,4 +47,6 @@ cd yatube -> python manage.py migrate
 ```
 python manage.py runserver
 ```
+[⬆️Оглавление](#оглавление)
+
 [![CI](https://github.com/yandex-praktikum/hw05_final/actions/workflows/python-app.yml/badge.svg?branch=master)](https://github.com/yandex-praktikum/hw05_final/actions/workflows/python-app.yml)
