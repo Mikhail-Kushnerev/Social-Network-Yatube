@@ -71,7 +71,15 @@
           </a>
         </li>
         <li class="nav-link link-dark">
+          <a href="{% url 'posts:profile_page' user.username %}">
           Пользователь: {{ user.username }}
+          <img
+            src="{{ user.profile.image.url }}"
+            class="rounded-circle"
+            width="50px"
+            height="50px"
+          >
+          </a>
         <li>
         {% else %}
         <li class="nav-item">

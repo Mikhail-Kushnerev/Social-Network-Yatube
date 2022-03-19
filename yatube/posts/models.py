@@ -1,22 +1,16 @@
 from django.db import models
-from django.contrib.auth import get_user_model
+from django.contrib.auth.models import User
 from django.db.models.expressions import F
 from django.db.models.query_utils import Q
 
 from core.models import CreatedModel
 
-User = get_user_model()
 
-
-class Post(models.Model):
+class Post(CreatedModel):
 
     text = models.TextField(
         verbose_name='Текст',
         help_text='Введите текст'
-    )
-    pub_date = models.DateTimeField(
-        auto_now_add=True,
-        db_index=True
     )
     group = models.ForeignKey(
         'Group',
@@ -41,14 +35,15 @@ class Post(models.Model):
     class Meta:
         verbose_name = 'Пост'
         verbose_name_plural = 'Посты'
-        ordering = ('-pub_date',)
+        ordering = ('-created',)
 
     def __str__(self):
         return self.text[:15]
-    
+
     def trim50(self):
         return "%s..." % (self.text[:50],)
-    trim50.short_description="Текст"
+    trim50.short_description = "Текст"
+
 
 class Comment(CreatedModel):
     post = models.ForeignKey(

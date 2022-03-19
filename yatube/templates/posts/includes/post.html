@@ -4,14 +4,26 @@
             Автор: {{ post.author.get_full_name }}
         </li>
         <li>
-            Дата публикации: {{ post.pub_date|date:"d E Y" }}
+            Дата публикации: {{ post.created|date:"d E Y" }}
         </li>
     </ul>
+    {% if post.text|length > 300 %}
     <p style="overflow-wrap: break-word;">
-        {{ post.text|linebreaksbr }}
+        {{ post.text|linebreaksbr|truncatechars:300 }}
+          <a href="{% url 'posts:post_detail' post.id %}"> Читать полностью </a>
+        
+        <a href="{% url 'posts:post_detail' post.id %}"></a>
+        
     </p>
+    {% else %}
+    <a 
+      style="text-decoration:none; color:#212529"
+      href="{% url 'posts:post_detail' post.id %}"
+    >
+      {{ post.text }}
+    </a>
+    {% endif %}
     {% include 'posts/includes/picture.html' %}
-    <a href="{% url 'posts:post_detail' post.id %}"> подробная информация </a>
     <p>
         {% if post.group %}
         <a href="{% url 'posts:group_list' post.group.slug %}"> все записи группы </a>
@@ -19,6 +31,71 @@
         У этого поста нет группы
         {% endif %}
     </p>
+    <a 
+        type="button"
+        data-bs-toggle="modal"
+        data-bs-target="#exampleModal"
+    >
+        <svg 
+            xmlns="http://www.w3.org/2000/svg"
+            width="16"
+            height="16"
+            fill="currentColor"
+            class="bi bi-chat-left-text"
+            viewBox="0 0 16 16"
+        >
+                <path d="M14 1a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H4.414A2 2 0 0 0 3 11.586l-2 2V2a1 1 0 0 1 1-1h12zM2 0a2 2 0 0 0-2 2v12.793a.5.5 0 0 0 .854.353l2.853-2.853A1 1 0 0 1 4.414 12H14a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2z"/>
+                <path d="M3 3.5a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5zM3 6a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9A.5.5 0 0 1 3 6zm0 2.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5z"/>
+        </svg>
+    </a>
+    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <form method="post">
+                {%csrf_token%}
+                {{ form.as_p }}
+              </form>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+              <button type="button" class="btn btn-primary">Save changes</button>
+            </div>
+          </div>
+        </div>
+    </div>
+    {{ post.comments.count }}
+    {% if post.comments.count != 0 %}
+    {% for i in post.comments.all|slice:":3" %}
+    <div>
+      <p>
+        <img
+          src="{{ post.author.profile.image.url }}"
+          class="rounded-circle"
+          width="25px"
+          height="25px"      
+        >
+        {{ post.author.first_name }}
+      </p>
+      <p>
+        {{ i.text }} | {{ i.created }} | 
+      </p>
+    </div>
+    {% endfor %}
+    <p>
+        <a href="{% url 'posts:post_detail' post.id %}"> все комментарии </a>
+    </p>
+    {% endif %}
     {% if not forloop.last %}
-    <hr> {% endif %}
-</article>
+    <hr>
+    {% endif %}
+</article>  
+  <!-- Modal -->
+
+<!-- Button trigger modal -->
+<!-- Только CSS -->
+

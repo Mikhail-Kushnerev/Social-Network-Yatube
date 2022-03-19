@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<h1>    
+    {{ user.first_name }} {{ user.last_name }}
+</h1>
+</br>
+<a 
+    class="nav-link"
+    href="{% url 'posts:profile' user.username %}"
+>
+    Количество постов: {{ post_count.count }}
+</a>
+Количество подписок: {{ follow.count }}
+{% for name in follow %}
+    <li>
+        <a href="{% url 'posts:profile' name.author %}">
+            {{ name.author }}
+            <img
+                src="{{ name.author.profile.image.url }}"
+                class="rounded-circle"
+                width="100px"
+                height="100px"
+            >
+            <hr>      
+        </a>
+    </li>
+{% endfor %}
+{% endblock %}

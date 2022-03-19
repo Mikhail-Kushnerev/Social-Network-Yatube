@@ -8,13 +8,13 @@ class PostAdmin(admin.ModelAdmin):
     list_display = (
         'pk',
         'trim50',
-        'pub_date',
+        'created',
         'author',
         'group',
         'image',
     )
     search_fields = ('text',)
-    list_filter = ('author', 'pub_date')
+    list_filter = ('author', 'created')
     list_editable = ('group',)
     empty_value_display = '-пусто-'
     list_per_page = 10

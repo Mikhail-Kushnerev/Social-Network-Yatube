@@ -1,3 +1,4 @@
+from django.db import IntegrityError
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render, get_object_or_404
 from django.views.decorators.cache import cache_page
@@ -5,17 +6,29 @@ from django.views.decorators.cache import cache_page
 from .utils import get_page_context
 from .models import User, Post, Group, Follow
 from .forms import PostForm, CommentForm
+from users.models import Profile
 
 
-@cache_page(20)
+# @cache_page(20)
 def index(request):
     """
     Функция, возвращающая всем пользователям 10 постов на 1 странице
     по убыванию даты создания самих постов.
     """
     template = 'posts/index.html'
-    context = get_page_context(Post.objects.all(), request)
-    return render(request, template, context)
+    form = CommentForm
+    context = {'form': form}
+    context.update(
+        get_page_context(
+            Post.objects.all(),
+            request
+        )
+    )
+    return render(
+        request,
+        template,
+        context
+    )
 
 
 def group_posts(request, slug):
@@ -30,14 +43,19 @@ def group_posts(request, slug):
     )
     title = f'Записи сообщества {group}'
     description = group.description
-    posts = group.group_post.all()
+    # posts = group.group_post.all()
     context = {
-        'posts': posts,
+        # 'posts': posts,
         'group': group,
         'title': title,
         'description': description,
     }
-    context.update(get_page_context(group.group_post.all(), request))
+    context.update(
+        get_page_context(
+            group.group_post.all(),
+            request
+        )
+    )
     return render(
         request,
         template,
@@ -56,22 +74,43 @@ def profile(request, username):
         User,
         username=username
     )
-    posts = author.posts.all()
+    # posts = author.posts.all()
     following = Follow.objects.filter(
         user__username=user,
         author=author
     ).exists()
     context = {
-        'posts': posts,
+        # 'posts': posts,
         'author': author,
         'following': following,
     }
-    context.update(get_page_context(author.posts.all(), request))
+    context.update(
+        get_page_context(
+            author.posts.all(),
+            request
+        )
+    )
     return render(
         request,
         template,
         context
     )
+
+
+def profile_page(request, username):
+    template = 'posts/profile_page.html'
+    post_count = Post.objects.all()
+    follow = Follow.objects.filter(
+        user=request.user,
+    )
+    # pp = Pro.objects.filter(user=follow[0].author)[0]
+    context = {
+        'post_count': post_count,
+        'follow': follow,
+        # 'pp': pp
+    }
+    #us = User.objects.filter(username=request.user.username)
+    return render(request, template, context)
 
 
 def post_detail(request, post_id):
@@ -86,14 +125,14 @@ def post_detail(request, post_id):
     Есть возможность комментировать данный пост.
     """
     template = 'posts/post_detail.html'
-    text_post = get_object_or_404(
+    post = get_object_or_404(
         Post,
         pk=post_id
     )
     form = CommentForm()
-    comments = text_post.comments.all()
+    comments = post.comments.all()
     context = {
-        'text_post': text_post,
+        'post': post,
         'form': form,
         'comments': comments,
     }
@@ -149,7 +188,10 @@ def post_edit(request, post_id):
         pk=post_id
     )
     if post.author != request.user:
-        return redirect('posts:post_detail', post_id)
+        return redirect(
+            'posts:post_detail',
+            post_id
+        )
     title = "Редактировать запись"
     text = "Редактирование поста"
     apply = "Сохранить изменения"
@@ -207,7 +249,12 @@ def follow_index(request):
     """
     post_list = Post.objects.filter(author__following__user=request.user)
     context = {}
-    context.update(get_page_context(post_list, request))
+    context.update(
+        get_page_context(
+            post_list,
+            request
+        )
+    )
     return render(
         request,
         "posts/follow.html",
@@ -221,10 +268,21 @@ def profile_follow(request, username):
     Функция, возвращающая возможнсоть зарегестрированным пользователям
     подписаться на конкретного автора.
     """
-    author = get_object_or_404(User, username=username)
-    if author != request.user:
-        Follow.objects.get_or_create(user=request.user, author=author)
-    return redirect('posts:profile', username=username)
+    author = get_object_or_404(
+        User,
+        username=username
+    )
+    try:
+        Follow.objects.get_or_create(
+            user=request.user,
+            author=author
+        )
+    except IntegrityError:
+        pass
+    return redirect(
+        'posts:profile',
+        username=username
+    )
 
 
 @login_required
@@ -233,7 +291,10 @@ def profile_unfollow(request, username):
     Функция, возвращающая возможнсоть зарегестрированным пользователям
     отписаться от конкретного автора.
     """
-    author = get_object_or_404(User, username=username)
+    author = get_object_or_404(
+        User,
+        username=username
+    )
     profile_follow = get_object_or_404(
         Follow,
         author=author,
@@ -241,4 +302,7 @@ def profile_unfollow(request, username):
     )
     if Follow.objects.filter(pk=profile_follow.pk).exists():
         profile_follow.delete()
-    return redirect('posts:profile', username=username)
+    return redirect(
+        'posts:profile',
+        username=username
+    )

@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% block title %} {{ text_post|truncatechars:30 }} {% endblock %}
+{% block title %} {{ post|truncatechars:30 }} {% endblock %}
 {% block content %}
 {% load user_filters %}
 <div class="container py-5">
@@ -7,22 +7,22 @@
     <aside class="col-12 col-md-3">
       <ul class="list-group list-group-flush">
         <li class="list-group-item">
-          {% if text_post.group %}
-          Группа: {{ text_post.group }}
-          <a href="{% url 'posts:group_list' text_post.group.slug %}"> все записи группы </a>
+          {% if post.group %}
+          Группа: {{ post.group }}
+          <a href="{% url 'posts:group_list' post.group.slug %}"> все записи группы </a>
           {% endif %}
         </li>
         <li class="list-group-item">
-          Дата публикации: {{ text_post.pub_date|date:"d E Y" }}
+          Дата публикации: {{ post.pub_date|date:"d E Y" }}
         </li>
         <li class="list-group-item">
-          Автор: {{ text_post.author.get_full_name }}
+          Автор: {{ post.author.get_full_name }}
         </li>
         <li class="list-group-item d-flex justify-content-between align-items-center">
-          Всего постов автора: <span> {{ text_post.author.posts.count }} </span>
+          Всего постов автора: <span> {{ post.author.posts.count }} </span>
         </li>
         <li class="list-group-item">
-          <a href="{% url 'posts:profile' text_post.author.username %}">
+          <a href="{% url 'posts:profile' post.author.username %}">
             все посты пользователя:
           </a>
         </li>
@@ -32,12 +32,12 @@
       {% include 'posts/includes/picture.html' %}
       <article class="col-12 col-md-9">
         <p style="overflow-wrap: break-word;">
-          {{ text_post.text|linebreaksbr }} </p>
+          {{ post.text|linebreaksbr }} </p>
         </p>
       </article>
-      {% if text_post.author.id == user.id %}
+      {% if post.author.id == user.id %}
       <a
-        href="{% url 'posts:post_edit' text_post.id %}"
+        href="{% url 'posts:post_edit' post.id %}"
         class="btn btn-primary"
       >
         Редактировать
@@ -49,10 +49,10 @@
         <div class="card-body">
           <form 
             method="post"
-            action="{% url 'posts:add_comment' text_post.id %}"
+            action="{% url 'posts:add_comment' post.id %}"
           >
             {% csrf_token %}
-            {% for field in form%}
+            {% for field in form %}
               <div class="form-group mb-2">
                 {{ form.text|addclass:"form-control" }}
                 {% if field.help_text %}
