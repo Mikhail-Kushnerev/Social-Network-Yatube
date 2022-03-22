@@ -12,18 +12,18 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 SECRET_KEY = os.getenv("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 CSRF_FAILURE_VIEW = 'core.views.csrf_failure'
 
 ALLOWED_HOSTS = [
-    'localhost',
     '130.193.54.32',
     '127.0.0.1',
-    '[::1]',
-    'testserver',
-    'www.Mikhail99.pythonanywhere.com',
-    'Mikhail99.pythonanywhere.com',
+    'localhost',
+    # '[::1]',
+    # 'testserver',
+    # 'www.Mikhail99.pythonanywhere.com',
+    # 'Mikhail99.pythonanywhere.com',
 ]
 
 # Application definition
