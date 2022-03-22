@@ -2,4 +2,5 @@ Django==2.2.16
 django-debug-toolbar==3.2.4
 Pillow==8.4.0
 python-dotenv==0.19.2
+requests==2.26.0 
 sorl-thumbnail==12.7.0
