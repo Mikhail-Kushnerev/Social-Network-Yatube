@@ -6,7 +6,7 @@ from django.views.decorators.cache import cache_page
 from .utils import get_page_context
 from .models import User, Post, Group, Follow
 from .forms import PostForm, CommentForm
-from users.models import Profile
+#from users.models import Profile
 
 
 # @cache_page(20)

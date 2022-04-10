@@ -10,11 +10,11 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # SECURITY WARNING: keep the secret key used in production secret!
 
-SECRET_KEY = os.getenv("SECRET_KEY")
+SECRET_KEY = '1@q!le=^1mhgi7d=wt7h4)a+cifuq)92su70^0+om3h0@7twkr'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-CSRF_FAILURE_VIEW = 'core.views.csrf_failure'
+# CSRF_FAILURE_VIEW = 'core.views.csrf_failure'
 
 ALLOWED_HOSTS = [
     '130.193.54.32',
@@ -82,8 +82,12 @@ WSGI_APPLICATION = 'yatube.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'yatube_table',
+        'USER': 'postgres',
+        'PASSWORD': 'Bear2013',
+        'HOST': 'localhost',
+        # 'PORT': '5432'
     }
 }
 
